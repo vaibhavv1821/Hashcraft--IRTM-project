@@ -13,16 +13,14 @@ const PLATFORMS = [
 
 const TIPS = {
   all:       ['Mix trending and niche tags', 'Update hashtags regularly', 'Research competitor tags'],
-  instagram: ['Use 20-30 hashtags per post', 'Put tags in first comment for clean caption', 'Avoid banned hashtags'],
-  twitter:   ['Use only 1-3 hashtags', 'Place at end of tweet', 'Capitalize each word: #MondayMotivation'],
+  instagram: ['Use 20-30 hashtags per post', 'Put tags in first comment', 'Avoid banned hashtags'],
+  twitter:   ['Use only 1-3 hashtags', 'Place at end of tweet', 'Capitalize: #MondayMotivation'],
   linkedin:  ['3-5 hashtags is ideal', 'Use professional tone', 'Follow your own hashtags'],
-  youtube:   ['Add in video description', 'First 3 appear above title', 'Use 3-5 relevant hashtags'],
+  youtube:   ['Add in video description', 'First 3 appear above title', 'Use 3-5 relevant tags'],
   github:    ['Add as repository Topics', 'Use lowercase with hyphens', 'Max 20 topics per repo'],
 };
 
-export default function TrendingPanel({
-  trending, platform, onPlatformChange, isRealtime
-}) {
+export default function TrendingPanel({ trending, platform, onPlatformChange, isRealtime }) {
   const [copied, setCopied] = useState('');
 
   const copy = (tag) => {
@@ -63,28 +61,37 @@ export default function TrendingPanel({
         {trending.length === 0 && (
           <p className="tp-empty">Loading trends…</p>
         )}
-        {trending.slice(0, 15).map((item, i) => (
-          <div key={i} className="tp-item">
-            <span className="tp-rank">#{i + 1}</span>
-            <div className="tp-info">
-              <span className="tp-tag">{item.tag}</span>
-              <div className="tp-bar-wrap">
-                <div className="tp-bar" style={{ width: `${item.score}%` }} />
+        {trending.slice(0, 15).map((item, i) => {
+          // Fix: safely extract score as a plain number
+          const score = typeof item.score === 'number'
+            ? item.score
+            : parseInt(String(item.score), 10) || 0;
+
+          return (
+            <div key={i} className="tp-item">
+              <span className="tp-rank">#{i + 1}</span>
+              <div className="tp-info">
+                <span className="tp-tag">{item.tag}</span>
+                <div className="tp-bar-wrap">
+                  <div className="tp-bar" style={{ width: `${score}%` }} />
+                </div>
+              </div>
+              <div className="tp-right">
+                <span className="tp-score">{score}</span>
+                <button className="tp-copy" onClick={() => copy(item.tag)}>
+                  {copied === item.tag ? '✓' : '⎘'}
+                </button>
               </div>
             </div>
-            <div className="tp-right">
-              <span className="tp-score">{item.score}</span>
-              <button className="tp-copy" onClick={() => copy(item.tag)}>
-                {copied === item.tag ? '✓' : '⎘'}
-              </button>
-            </div>
-          </div>
-        ))}
+          );
+        })}
       </div>
 
       {/* Tips */}
       <div className="tips-card">
-        <h4 className="tips-title">💡 {platform.charAt(0).toUpperCase() + platform.slice(1)} Tips</h4>
+        <h4 className="tips-title">
+          💡 {platform.charAt(0).toUpperCase() + platform.slice(1)} Tips
+        </h4>
         <ul className="tips-list">
           {tips.map((tip, i) => (
             <li key={i} className="tips-item">{tip}</li>
