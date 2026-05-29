@@ -19,7 +19,11 @@ except Exception as e:
     _ml_available = False
 
 app = Flask(__name__)
-CORS(app, origins=["*"])
+CORS(app, origins=[
+    "http://localhost:3000",
+    "https://tagcraft.vercel.app",
+    "https://*.vercel.app"
+])
 
 # Try loading ML engine
 _ml = None
